@@ -1,0 +1,16 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# Local configuration (Optional, depending on your team's rules)
+appsettings.Development.json
+appsettings.Local.json
+
+# Visual Studio / IDE folders
+.vs/
+.idea/
+*.user
+*.suo
+
+# Log files
+*.log
