@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.Dtos.Comment;
+using backend.Interface;
 using backend.Mappers;
 
 using Microsoft.AspNetCore.Mvc;
@@ -12,16 +13,16 @@ namespace backend.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
-        private readonly ApplicationDBContext _context;
-        public CommentController(ApplicationDBContext context)
+        private readonly ICommentRepository _commentRepo ;
+        public CommentController(ICommentRepository commentRepo)
         {
-            _context = context;
+            _commentRepo = commentRepo;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var comments = await _context.Comments.ToListAsync();
+            var comments = await _commentRepo.GetAllAsync();
             var commentDto = comments.Select(s => s.ToCommentDto());
             return Ok(commentDto);
         }
@@ -29,7 +30,7 @@ namespace backend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            var comment = await _context.Comments.FindAsync(id);
+            var comment = await _commentRepo.GetByIdAsync(id);
 
             if (comment == null)
             {
@@ -42,10 +43,7 @@ namespace backend.Controllers
         public async Task<IActionResult> Create(int stockId, CreateCommentRequestDto commentDto)
         {
             var commentModel = commentDto.ToCommentFromCreateDto(stockId);
-            await _context.Comments.AddAsync(commentModel);
-
-            await _context.SaveChangesAsync();
-
+            await _commentRepo.CreateAsync(commentModel);
             /*
 
   When you create a resource (POST), best practice dictates you return a 201 Created status code, along with a Location header telling the client where to find the new resource.nameof(GetById): "Point the URL to my GetById method."
@@ -60,34 +58,38 @@ commentModel.ToCommentDto(): "Send the newly created comment back as JSON."*/
 
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCommentRequestDto updateDto)
         {
-            var commentModel = await _context.Comments.FirstOrDefaultAsync(x => x.Id == id);
+            // 1. Convert DTO to a temporary Model to pass to the repository
+            var commentToUpdate = new backend.Models.Comment 
+            { 
+                Title = updateDto.Title, 
+                Content = updateDto.Content 
+            };
 
-            if (commentModel == null)
+            // 2. The Repository handles finding the record, updating it, and saving it!
+            var updatedComment = await _commentRepo.UpdateAsync(id, commentToUpdate);
+
+            if (updatedComment == null)
             {
                 return NotFound();
             }
 
-            commentModel.Title = updateDto.Title;
-            commentModel.Content = updateDto.Content;
-
-            await _context.SaveChangesAsync();
-            return Ok(commentModel.ToCommentDto());
-
+            // 3. Map the updated result back to a DTO for the user
+            return Ok(updatedComment.ToCommentDto());
         }
 
         [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var commentModel = await _context.Comments.FirstOrDefaultAsync(x => x.Id == id);
+            var commentModel = await _commentRepo.DeleteAsync(id);
             if (commentModel == null)
             {
 
                 return NotFound();
             }
 
-            _context.Comments.Remove(commentModel);
-            await _context.SaveChangesAsync();
+            // _commentRepo.Remove(commentModel);
+            // await _commentRepo.SaveChangesAsync();
             return NoContent();
         }
 
