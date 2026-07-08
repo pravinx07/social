@@ -5,7 +5,7 @@ namespace backend.Interface
     public interface IStockRepository
     {
 
-        Task<List<Stock>> GetAllAsync();
+        Task<List<Stock>> GetAllAsync(Helpers.QueryObject query);
         Task<Stock?> GetByIdAsync(int id);
         Task<Stock> CreateAsync(Stock stockModel);
 
