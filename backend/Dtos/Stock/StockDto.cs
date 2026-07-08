@@ -1,3 +1,4 @@
+using backend.Dtos.Comment;
 namespace backend.Dtos.Stock
 {
     public class StockDto
@@ -15,6 +16,8 @@ namespace backend.Dtos.Stock
         // with ? it means this string can be null
         public string? Industry { get; set; }
         public string? MarketCap { get; set; }
+
+        public List<CommentDto> Comments { get; set; }
 
     }
 }

@@ -18,7 +18,7 @@ namespace backend.Controllers
         private readonly IStockRepository _stockRepo;
         public StockController(IStockRepository stockRepo)
         {
-            _stockRepo = stockRepo; ;
+            _stockRepo = stockRepo;
         }
 
         [HttpGet]
