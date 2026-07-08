@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.Interface;
+using backend.Middlewares;
 using backend.Repository;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -24,6 +25,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseMiddleware<GlobalExceptionMiddleware>();
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
