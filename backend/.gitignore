@@ -5,6 +5,7 @@
 # Local configuration (Optional, depending on your team's rules)
 appsettings.Development.json
 appsettings.Local.json
+appsettings.json
 
 # Visual Studio / IDE folders
 .vs/
