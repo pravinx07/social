@@ -4,6 +4,7 @@ using backend.Dtos.Stock;
 using backend.Helpers;
 using backend.Interface;
 using backend.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,7 @@ namespace backend.Controllers
             _stockRepo = stockRepo;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
@@ -44,7 +46,9 @@ namespace backend.Controllers
             return Ok(stock.ToStockDto());
         }
 
+
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateStockRequestDto stockDto)
         {
             var stockModel = stockDto.ToStockFromCreateDTO();
